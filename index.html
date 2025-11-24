@@ -5,56 +5,56 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Informes Financieros - Mateo Furtado</title>
     <style>
-        /* Estilos generales de la página */
+        /* --- ESTILOS GENERALES --- */
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f0f2f5; /* Un gris azulado muy claro de fondo */
+            background-color: #f0f2f5;
             color: #333;
             margin: 0;
             display: flex;
             flex-direction: column;
-            min-height: 100vh; /* Asegura que el footer quede siempre abajo */
+            min-height: 100vh;
         }
 
-        /* Contenedor principal para centrar el contenido */
         .container {
-            max-width: 800px;
+            max-width: 900px; /* Un poco más ancho para ver bien el PDF */
             margin: 0 auto;
             padding: 30px 20px;
-            flex: 1; /* Ocupa el espacio restante para empujar el footer */
+            flex: 1;
+            width: 100%;
+            box-sizing: border-box;
         }
 
-        /* Estilo del título principal (Ahora en AZUL) */
         h1 {
-            color: #003366; /* Azul oscuro profesional */
+            color: #003366;
             border-bottom: 3px solid #003366;
             padding-bottom: 15px;
             margin-top: 0;
             text-align: center;
         }
 
-        /* Estilo de las tarjetas de los informes */
+        /* --- TARJETAS DE INFORMES --- */
         .report-card {
             background: white;
             padding: 20px;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             border-radius: 10px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05); /* Sombra más suave */
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-left: 5px solid #004080; /* Borde lateral azul como acento */
+            border-left: 5px solid #004080;
             transition: transform 0.2s;
         }
         
         .report-card:hover {
-            transform: translateY(-2px); /* Pequeño efecto al pasar el mouse */
+            transform: translateY(-2px);
         }
 
         .report-info h3 {
             margin: 0 0 8px 0;
             font-size: 1.25rem;
-            color: #004080; /* Título del informe en azul */
+            color: #004080;
         }
 
         .report-date {
@@ -63,30 +63,57 @@
             display: block;
         }
 
-        /* Estilo del botón de descarga (Ahora AZUL) */
-        .btn-download {
-            background-color: #0056b3; /* Azul vibrante */
+        /* --- BOTÓN DE VER (Ahora activa el visor) --- */
+        .btn-view {
+            background-color: #0056b3;
             color: white;
-            text-decoration: none;
+            border: none;
+            cursor: pointer;
             padding: 12px 24px;
             border-radius: 6px;
             font-weight: bold;
+            font-size: 1rem;
             box-shadow: 0 2px 5px rgba(0,86,179,0.3);
             transition: all 0.3s ease;
         }
 
-        .btn-download:hover {
-            background-color: #004494; /* Azul más oscuro al pasar el mouse */
+        .btn-view:hover {
+            background-color: #004494;
             box-shadow: 0 4px 8px rgba(0,86,179,0.4);
         }
 
-        /* --- NUEVO ENCABEZADO INFERIOR (FOOTER) --- */
+        /* --- VISOR DE PDF (Nuevo) --- */
+        #visor-container {
+            display: none; /* Oculto por defecto */
+            margin-top: 30px;
+            background: white;
+            padding: 10px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.2);
+            border: 1px solid #ddd;
+        }
+
+        #titulo-visor {
+            color: #003366;
+            margin: 10px 0;
+            padding-left: 10px;
+        }
+
+        iframe {
+            width: 100%;
+            height: 700px; /* Altura del visor */
+            border: none;
+            border-radius: 5px;
+            background-color: #eee;
+        }
+
+        /* --- FOOTER --- */
         .site-footer {
-            background-color: #003366; /* Fondo AZUL oscuro */
-            color: white; /* Letras BLANCAS */
+            background-color: #003366;
+            color: white;
             text-align: center;
             padding: 25px;
-            font-weight: bold; /* Letras NEGRITAS */
+            font-weight: bold;
             font-size: 1.2rem;
             letter-spacing: 1px;
             box-shadow: 0 -4px 10px rgba(0,0,0,0.1);
@@ -99,6 +126,11 @@
         <h1>Informes Financieros Públicos</h1>
         
         <div id="lista-informes"></div>
+
+        <div id="visor-container">
+            <h2 id="titulo-visor">Visualizando Documento...</h2>
+            <iframe id="pdf-frame" src=""></iframe>
+        </div>
     </div>
 
     <footer class="site-footer">
@@ -107,22 +139,31 @@
 
     <script>
         // ==========================================
-        // ZONA EDITABLE: TUS INFORMES
+        // TUS INFORMES
         // ==========================================
         const informes = [
-            // Mantengo tu informe actual. ¡Agrega los nuevos debajo!
             { nombre: "Reporte de Crédito 3.0", fecha: "2025-11-24", url: "CREDITO 3.0.pdf" }
             
-            // EJEMPLO para el futuro (no olvides la coma al final de la línea anterior):
-            // , { nombre: "Balance Diciembre 2025", fecha: "2025-12-01", url: "balance_dic.pdf" }
+            // Ejemplo futuro:
+            // , { nombre: "Balance Diciembre", fecha: "2025-12-01", url: "balance.pdf" }
         ];
         // ==========================================
 
-
-        // Lógica del sistema (No hace falta tocar esto)
         informes.sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
-
         const contenedor = document.getElementById('lista-informes');
+        const visor = document.getElementById('visor-container');
+        const frame = document.getElementById('pdf-frame');
+        const tituloVisor = document.getElementById('titulo-visor');
+
+        // Función para mostrar el PDF
+        function cargarPDF(url, nombre) {
+            visor.style.display = "block"; // Mostrar el contenedor
+            frame.src = url; // Cargar el PDF
+            tituloVisor.innerText = "Visualizando: " + nombre;
+            
+            // Hacer scroll suave hacia el visor
+            visor.scrollIntoView({ behavior: 'smooth' });
+        }
 
         informes.forEach(informe => {
             const card = document.createElement('div');
@@ -132,9 +173,9 @@
                     <h3>${informe.nombre}</h3>
                     <span class="report-date">📅 Publicado: ${informe.fecha}</span>
                 </div>
-                <a href="${informe.url}" class="btn-download" target="_blank" download>
-                    Descargar PDF
-                </a>
+                <button class="btn-view" onclick="cargarPDF('${informe.url}', '${informe.nombre}')">
+                    Ver Informe
+                </button>
             `;
             contenedor.appendChild(card);
         });
