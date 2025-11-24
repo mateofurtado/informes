@@ -98,5 +98,47 @@
     <div class="container">
         <h1>Informes Financieros Públicos</h1>
         
-        <div id
+        <div id="lista-informes"></div>
+    </div>
 
+    <footer class="site-footer">
+        Mateo Furtado
+    </footer>
+
+    <script>
+        // ==========================================
+        // ZONA EDITABLE: TUS INFORMES
+        // ==========================================
+        const informes = [
+            // Mantengo tu informe actual. ¡Agrega los nuevos debajo!
+            { nombre: "Reporte de Crédito 3.0", fecha: "2025-11-24", url: "CREDITO 3.0.pdf" }
+            
+            // EJEMPLO para el futuro (no olvides la coma al final de la línea anterior):
+            // , { nombre: "Balance Diciembre 2025", fecha: "2025-12-01", url: "balance_dic.pdf" }
+        ];
+        // ==========================================
+
+
+        // Lógica del sistema (No hace falta tocar esto)
+        informes.sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
+
+        const contenedor = document.getElementById('lista-informes');
+
+        informes.forEach(informe => {
+            const card = document.createElement('div');
+            card.className = 'report-card';
+            card.innerHTML = `
+                <div class="report-info">
+                    <h3>${informe.nombre}</h3>
+                    <span class="report-date">📅 Publicado: ${informe.fecha}</span>
+                </div>
+                <a href="${informe.url}" class="btn-download" target="_blank" download>
+                    Descargar PDF
+                </a>
+            `;
+            contenedor.appendChild(card);
+        });
+    </script>
+
+</body>
+</html>
