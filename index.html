@@ -17,7 +17,7 @@
         }
 
         .container {
-            max-width: 900px; /* Un poco más ancho para ver bien el PDF */
+            max-width: 900px;
             margin: 0 auto;
             padding: 30px 20px;
             flex: 1;
@@ -63,7 +63,7 @@
             display: block;
         }
 
-        /* --- BOTÓN DE VER (Ahora activa el visor) --- */
+        /* --- BOTÓN DE VER --- */
         .btn-view {
             background-color: #0056b3;
             color: white;
@@ -82,9 +82,9 @@
             box-shadow: 0 4px 8px rgba(0,86,179,0.4);
         }
 
-        /* --- VISOR DE PDF (Nuevo) --- */
+        /* --- VISOR DE PDF --- */
         #visor-container {
-            display: none; /* Oculto por defecto */
+            display: none;
             margin-top: 30px;
             background: white;
             padding: 10px;
@@ -101,7 +101,7 @@
 
         iframe {
             width: 100%;
-            height: 700px; /* Altura del visor */
+            height: 700px;
             border: none;
             border-radius: 5px;
             background-color: #eee;
@@ -123,7 +123,7 @@
 <body>
 
     <div class="container">
-        <h1>Informes Financieros</h1>
+        <h1>Informes Financieros y Económicos</h1>
         
         <div id="lista-informes"></div>
 
@@ -139,17 +139,21 @@
 
     <script>
         // ==========================================
-        // TUS INFORMES
+        // ZONA EDITABLE: TUS INFORMES
         // ==========================================
         const informes = [
+            // IMPORTANTE: Mantén la fecha en formato AÑO-MES-DÍA ("YYYY-MM-DD")
+            // El código se encarga solo de transformarla a "Día/Mes/Año" visualmente.
             { nombre: "Reporte de Crédito 3.0", fecha: "2025-11-24", url: "CREDITO 3.0.pdf" }
             
-            // Ejemplo futuro:
-            // , { nombre: "Balance Diciembre", fecha: "2025-12-01", url: "balance.pdf" }
+            // Ejemplo para agregar otro (borra las barras // al principio para usarlo):
+            // , { nombre: "Análisis Mercado Q4", fecha: "2025-12-01", url: "mercado.pdf" }
         ];
         // ==========================================
 
+        // Ordenar por fecha (del más nuevo al más viejo)
         informes.sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
+        
         const contenedor = document.getElementById('lista-informes');
         const visor = document.getElementById('visor-container');
         const frame = document.getElementById('pdf-frame');
@@ -157,21 +161,27 @@
 
         // Función para mostrar el PDF
         function cargarPDF(url, nombre) {
-            visor.style.display = "block"; // Mostrar el contenedor
-            frame.src = url; // Cargar el PDF
+            visor.style.display = "block";
+            frame.src = url;
             tituloVisor.innerText = "Visualizando: " + nombre;
-            
-            // Hacer scroll suave hacia el visor
             visor.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Función auxiliar para convertir fecha "2025-11-24" a "24/11/2025"
+        function formatearFecha(fechaISO) {
+            const partes = fechaISO.split('-'); // Divide por guiones
+            return `${partes[2]}/${partes[1]}/${partes[0]}`; // Reordena a Día/Mes/Año
         }
 
         informes.forEach(informe => {
             const card = document.createElement('div');
             card.className = 'report-card';
+            
+            // Aquí usamos la nueva función formatearFecha
             card.innerHTML = `
                 <div class="report-info">
                     <h3>${informe.nombre}</h3>
-                    <span class="report-date">📅 Publicado: ${informe.fecha}</span>
+                    <span class="report-date">Publicado: ${formatearFecha(informe.fecha)}</span>
                 </div>
                 <button class="btn-view" onclick="cargarPDF('${informe.url}', '${informe.nombre}')">
                     Ver Informe
@@ -183,4 +193,3 @@
 
 </body>
 </html>
-
