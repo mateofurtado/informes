@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Informes Financieros - Mateo Furtado</title>
     <style>
-        /* --- ESTILOS GENERALES --- */
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #f0f2f5;
@@ -17,7 +16,7 @@
         }
 
         .container {
-            max-width: 1100px; /* Más ancho para que quepan dos columnas */
+            max-width: 900px;
             margin: 0 auto;
             padding: 30px 20px;
             flex: 1;
@@ -33,87 +32,101 @@
             text-align: center;
         }
 
-        /* --- ESTRUCTURA DE DOS COLUMNAS --- */
-        .columns-container {
+        /* --- BOTONES DE IDIOMA (PESTAÑAS) --- */
+        .language-tabs {
             display: flex;
-            gap: 30px; /* Espacio entre columnas */
+            justify-content: center;
+            gap: 15px;
             margin-bottom: 30px;
         }
 
-        .column {
-            flex: 1; /* Ambas columnas del mismo ancho */
-            background: #fff;
+        .tab-btn {
+            background-color: #e0e6ed;
+            color: #555;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 30px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .tab-btn:hover {
+            background-color: #d0dbe7;
+        }
+
+        .tab-btn.active {
+            background-color: #003366;
+            color: white;
+            box-shadow: 0 4px 10px rgba(0,51,102,0.3);
+            transform: scale(1.05);
+        }
+
+        /* --- CONTENEDORES DE LISTAS --- */
+        .list-container {
+            display: none; /* Ocultos por defecto, JS activa uno */
+            animation: fadeIn 0.5s;
+        }
+
+        .list-container.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* --- TARJETAS --- */
+        .report-card {
+            background: white;
             padding: 20px;
+            margin-bottom: 15px;
             border-radius: 10px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-        }
-
-        .column h2 {
-            color: #004080;
-            border-bottom: 2px solid #eee;
-            padding-bottom: 10px;
-            margin-top: 0;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        /* En celulares, poner una columna debajo de la otra */
-        @media (max-width: 768px) {
-            .columns-container {
-                flex-direction: column;
-            }
-        }
-
-        /* --- TARJETAS DE INFORMES --- */
-        .report-card {
-            background: #f9fbfd;
-            padding: 15px;
-            margin-bottom: 15px;
-            border-radius: 8px;
-            border: 1px solid #e1e4e8;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            border-left: 5px solid #004080;
             transition: transform 0.2s;
         }
         
         .report-card:hover {
             transform: translateY(-2px);
-            border-color: #0056b3;
         }
 
         .report-info h3 {
-            margin: 0 0 5px 0;
-            font-size: 1.1rem;
-            color: #003366;
+            margin: 0 0 8px 0;
+            font-size: 1.2rem;
+            color: #004080;
         }
 
         .report-date {
             color: #666;
-            font-size: 0.85rem;
+            font-size: 0.9rem;
             display: block;
         }
 
-        /* --- BOTÓN DE VER --- */
         .btn-view {
             background-color: #0056b3;
             color: white;
             border: none;
             cursor: pointer;
-            padding: 8px 16px;
-            border-radius: 5px;
+            padding: 10px 20px;
+            border-radius: 6px;
             font-weight: bold;
-            font-size: 0.9rem;
+            font-size: 0.95rem;
             transition: all 0.3s ease;
-            white-space: nowrap; /* Evita que el texto del botón se rompa */
+            white-space: nowrap;
         }
 
         .btn-view:hover {
             background-color: #004494;
         }
 
-        /* --- VISOR DE PDF --- */
+        /* --- VISOR PDF --- */
         #visor-container {
             display: none;
             margin-top: 30px;
@@ -132,13 +145,12 @@
 
         iframe {
             width: 100%;
-            height: 750px;
+            height: 700px;
             border: none;
             border-radius: 5px;
             background-color: #eee;
         }
 
-        /* --- FOOTER --- */
         .site-footer {
             background-color: #003366;
             color: white;
@@ -147,7 +159,6 @@
             font-weight: bold;
             font-size: 1.2rem;
             letter-spacing: 1px;
-            box-shadow: 0 -4px 10px rgba(0,0,0,0.1);
         }
     </style>
 </head>
@@ -156,16 +167,17 @@
     <div class="container">
         <h1>Informes Financieros y Económicos</h1>
         
-        <div class="columns-container">
-            <div class="column">
-                <h2>🇪🇸 Español</h2>
-                <div id="lista-espanol"></div>
-            </div>
+        <div class="language-tabs">
+            <button class="tab-btn active" onclick="cambiarIdioma('es')" id="btn-es">🇪🇸 Español</button>
+            <button class="tab-btn" onclick="cambiarIdioma('en')" id="btn-en">🇺🇸 English</button>
+        </div>
 
-            <div class="column">
-                <h2>🇺🇸 English</h2>
-                <div id="lista-ingles"></div>
-            </div>
+        <div id="contenedor-es" class="list-container active">
+            <div id="lista-espanol"></div>
+        </div>
+
+        <div id="contenedor-en" class="list-container">
+            <div id="lista-ingles"></div>
         </div>
 
         <div id="visor-container">
@@ -180,24 +192,41 @@
 
     <script>
         // ==========================================
-        // ZONA EDITABLE: TUS INFORMES
+        // DATOS EDITABLES
         // ==========================================
         
-        // 1. LISTA DE INFORMES EN ESPAÑOL
         const informesES = [
             { nombre: "Reporte de Crédito 3.0", fecha: "2025-11-24", url: "CREDITO 3.0.pdf" }
-            // Agrega nuevos aquí abajo con una coma al final de la línea anterior
         ];
 
-        // 2. LISTA DE INFORMES EN INGLÉS
         const informesEN = [
-            { nombre: "Credit Report 3.0", fecha: "2025-11-24", url: "CREDITO 3.0.pdf" } 
-            // Nota: Aquí puse el mismo PDF de ejemplo, pero deberías subir la versión en inglés (ej: CREDIT_3.0_EN.pdf) y cambiar la URL.
+            { nombre: "Credit Report 3.0", fecha: "2025-11-24", url: "CREDITO 3.0.pdf" }
         ];
 
         // ==========================================
-        // LÓGICA DEL SISTEMA
-        // ==========================================
+        
+        function cambiarIdioma(idioma) {
+            const contES = document.getElementById('contenedor-es');
+            const contEN = document.getElementById('contenedor-en');
+            const btnES = document.getElementById('btn-es');
+            const btnEN = document.getElementById('btn-en');
+            const visor = document.getElementById('visor-container');
+
+            // Ocultar visor al cambiar idioma
+            visor.style.display = 'none';
+
+            if (idioma === 'es') {
+                contES.classList.add('active');
+                contEN.classList.remove('active');
+                btnES.classList.add('active');
+                btnEN.classList.remove('active');
+            } else {
+                contEN.classList.add('active');
+                contES.classList.remove('active');
+                btnEN.classList.add('active');
+                btnES.classList.remove('active');
+            }
+        }
 
         function formatearFecha(fechaISO) {
             const partes = fechaISO.split('-');
@@ -211,14 +240,12 @@
             
             visor.style.display = "block";
             frame.src = url;
-            tituloVisor.innerText = "Visualizando: " + nombre;
+            tituloVisor.innerText = nombre;
             visor.scrollIntoView({ behavior: 'smooth' });
         }
 
         function renderizarLista(lista, contenedorID, textoBoton) {
-            // Ordenar por fecha
             lista.sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
-            
             const contenedor = document.getElementById(contenedorID);
             
             lista.forEach(informe => {
@@ -237,7 +264,6 @@
             });
         }
 
-        // Ejecutar la renderización
         renderizarLista(informesES, 'lista-espanol', 'Ver Informe');
         renderizarLista(informesEN, 'lista-ingles', 'View Report');
 
@@ -245,4 +271,3 @@
 
 </body>
 </html>
-
