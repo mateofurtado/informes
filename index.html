@@ -3,590 +3,225 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mateo Furtado - Portfolio</title>
+    <title>Informes Financieros y Económicos</title>
     <style>
-        :root {
-            --bg-body: #f0f2f5;
-            --text-main: #333;
-            --text-secondary: #666;
-            --card-bg: #ffffff;
-            --primary-color: #003366;
-            --accent-color: #0056b3;
-            --border-color: #ddd;
-            --pill-bg: #f8f9fa;
-            --pill-border: #e1e4e8;
-            --pill-text: #555;
-            --shadow: 0 4px 12px rgba(0,0,0,0.05);
-            --topbar-bg: #ffffff;
-        }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; margin: 0; background-color: #f7f9fc; }
+        .header { background-color: #f7f9fc; padding: 20px 0; text-align: center; border-bottom: 1px solid #e0e0e0; }
+        .header h1 { color: #333; margin: 0; font-size: 28px; }
+        .header .subtitle { width: 300px; margin: 0 auto; border-bottom: 3px solid #0056b3; padding-bottom: 5px; }
+        .nav-buttons { text-align: center; margin-bottom: 20px; }
+        .nav-buttons button { padding: 10px 20px; margin: 0 10px; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; font-weight: 600; transition: background-color 0.3s, color 0.3s; }
+        .nav-buttons .active { background-color: #0056b3; color: white; }
+        .nav-buttons .inactive { background-color: #e0e0e0; color: #333; }
+        .container { max-width: 1100px; margin: 20px auto; padding: 0 20px; }
+        .language-switcher { text-align: center; margin-bottom: 20px; }
+        .language-switcher button { padding: 8px 15px; margin: 0 5px; border: 1px solid #ccc; border-radius: 4px; cursor: pointer; background-color: white; transition: background-color 0.3s; }
+        .language-switcher button:hover { background-color: #eee; }
+        .language-switcher .active-lang { background-color: #0056b3; color: white; border-color: #0056b3; }
+        .report-card { background-color: white; border-radius: 8px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); padding: 20px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; }
+        .report-info h3 { margin: 0 0 5px 0; color: #0056b3; }
+        .report-info p { margin: 0; color: #555; font-size: 14px; }
+        .view-button { padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; background-color: #007bff; color: white; transition: background-color 0.3s; }
+        .view-button:hover { background-color: #0056b3; }
+        .pdf-viewer-section { background-color: white; border-radius: 8px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); padding: 20px; margin-top: 20px; }
+        .pdf-viewer-title { font-size: 22px; color: #333; margin-top: 0; margin-bottom: 15px; border-bottom: 2px solid #e0e0e0; padding-bottom: 10px; }
+        #pdfViewer { width: 100%; height: 600px; border: 1px solid #ccc; }
+        .footer { background-color: #002d62; color: white; padding: 15px 20px; text-align: left; font-size: 14px; position: fixed; bottom: 0; width: 100%; display: flex; justify-content: space-between; align-items: center; }
+        .footer-text { margin: 0; }
+        .footer-date { font-weight: bold; }
 
-        body.dark-mode {
-            --bg-body: #121212;
-            --text-main: #e0e0e0;
-            --text-secondary: #aaaaaa;
-            --card-bg: #1e1e1e;
-            --primary-color: #64b5f6;
-            --accent-color: #2196f3;
-            --border-color: #333;
-            --pill-bg: #2d2d2d;
-            --pill-border: #444;
-            --pill-text: #ccc;
-            --shadow: 0 4px 12px rgba(0,0,0,0.3);
-            --topbar-bg: #1e1e1e;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg-body);
-            color: var(--text-main);
-            margin: 0;
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-            transition: background-color 0.3s, color 0.3s;
-        }
-
-        .top-bar {
-            background-color: var(--topbar-bg);
-            padding: 10px 20px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            flex-wrap: wrap;
-            gap: 15px;
-            transition: background-color 0.3s;
-        }
-
-        .left-section {
-            display: flex;
-            gap: 15px;
-            align-items: center;
-        }
-
-        .lang-btn {
-            border: 2px solid var(--primary-color);
-            background: transparent;
-            color: var(--primary-color);
-            padding: 5px 15px;
-            border-radius: 20px;
-            cursor: pointer;
-            font-weight: bold;
-            font-size: 0.85rem;
-            transition: all 0.3s;
-        }
-
-        .lang-btn:hover {
-            background-color: rgba(0, 51, 102, 0.1);
-        }
-
-        .lang-btn.active {
-            background-color: var(--primary-color);
-            color: var(--topbar-bg);
-        }
-
-        .theme-switch-wrapper {
-            display: flex;
-            align-items: center;
-        }
-
-        .theme-switch {
-            display: inline-block;
-            height: 24px;
-            position: relative;
-            width: 46px;
-        }
-
-        .theme-switch input {
-            display: none;
-        }
-
-        .slider {
-            background-color: #ccc;
-            bottom: 0;
-            cursor: pointer;
-            left: 0;
-            position: absolute;
-            right: 0;
-            top: 0;
-            transition: .4s;
-            border-radius: 34px;
-        }
-
-        .slider:before {
-            background-color: #fff;
-            bottom: 4px;
-            content: "";
-            height: 16px;
-            left: 4px;
-            position: absolute;
-            transition: .4s;
-            width: 16px;
-            border-radius: 50%;
-        }
-
-        input:checked + .slider {
-            background-color: var(--primary-color);
-        }
-
-        input:checked + .slider:before {
-            transform: translateX(22px);
-        }
-
-        .markets-grid {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-            justify-content: flex-end;
-        }
-
-        .market-pill {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            font-size: 0.7rem;
-            font-weight: bold;
-            background-color: var(--pill-bg);
-            padding: 4px 8px;
-            border-radius: 12px;
-            border: 1px solid var(--pill-border);
-            color: var(--pill-text);
-            white-space: nowrap;
-            transition: background-color 0.3s, border-color 0.3s, color 0.3s;
-        }
-
-        .status-dot {
-            width: 7px;
-            height: 7px;
-            border-radius: 50%;
-            background-color: #bdc3c7;
-        }
-
-        .status-dot.open {
-            background-color: #27ae60;
-            box-shadow: 0 0 4px #27ae60;
-        }
-
-        .status-dot.closed {
-            background-color: #c0392b;
-        }
-
-        .market-name {
-            text-transform: uppercase;
-        }
-
-        .container {
-            max-width: 1000px;
-            margin: 0 auto;
-            padding: 30px 20px;
-            flex: 1;
-            width: 100%;
-            box-sizing: border-box;
-        }
-
-        h1 {
-            color: var(--primary-color);
-            border-bottom: 3px solid var(--primary-color);
-            padding-bottom: 15px;
-            margin-top: 10px;
-            text-align: center;
-        }
-
-        .search-container {
-            margin-bottom: 20px;
-            display: flex;
-            justify-content: center;
-        }
-
-        .search-input {
-            width: 100%;
-            max-width: 500px;
-            padding: 12px 20px;
-            font-size: 1rem;
-            border: 1px solid var(--border-color);
-            border-radius: 30px;
-            background-color: var(--card-bg);
-            color: var(--text-main);
-            box-shadow: var(--shadow);
-            outline: none;
-            transition: all 0.3s;
-        }
-
-        .search-input:focus {
-            border-color: var(--accent-color);
-            box-shadow: 0 0 8px rgba(0, 86, 179, 0.2);
-        }
-
-        .list-container {
-            display: none;
-        }
-
-        .list-container.active {
-            display: block;
-            animation: fadeIn 0.5s;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .report-card {
-            background: var(--card-bg);
-            padding: 20px;
-            margin-bottom: 15px;
-            border-radius: 10px;
-            box-shadow: var(--shadow);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-left: 5px solid var(--primary-color);
-            transition: transform 0.2s, background-color 0.3s;
-        }
-
-        .report-card:hover {
-            transform: translateY(-2px);
-        }
-
-        .report-info h3 {
-            margin: 0 0 5px 0;
-            font-size: 1.1rem;
-            color: var(--primary-color);
-        }
-
-        .report-date {
-            color: var(--text-secondary);
-            font-size: 0.9rem;
-        }
-
-        .btn-view {
-            background-color: var(--accent-color);
-            color: white;
-            border: none;
-            cursor: pointer;
-            padding: 8px 16px;
-            border-radius: 5px;
-            font-weight: bold;
-            transition: background 0.3s;
-        }
-
-        .btn-view:hover {
-            opacity: 0.9;
-        }
-
-        #visor-container {
-            display: none;
-            margin-top: 30px;
-            background: var(--card-bg);
-            padding: 10px;
-            border-radius: 10px;
-            box-shadow: var(--shadow);
-            border: 1px solid var(--border-color);
-        }
-
-        #titulo-visor {
-            color: var(--primary-color);
-            margin: 10px 0;
-            padding-left: 10px;
-        }
-
-        iframe {
-            width: 100%;
-            height: 700px;
-            border: none;
-            background-color: #eee;
-        }
-
-        .site-footer {
-            background-color: #003366;
-            color: white;
-            border-top: 1px solid var(--border-color);
-            padding: 15px 40px;
-            font-weight: bold;
-            font-size: 0.9rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            transition: background-color 0.3s, color 0.3s;
-        }
-
-        .footer-left {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .linkedin-icon svg {
-            width: 20px;
-            height: 20px;
-            fill: white;
-            transition: fill 0.3s;
-        }
-
-        .linkedin-icon:hover svg {
-            fill: #64b5f6;
-        }
-
-        @media (max-width: 900px) {
-            .top-bar {
-                flex-direction: column;
-                align-items: center;
-            }
-            .markets-grid {
-                justify-content: center;
-            }
-            .report-card {
-                flex-direction: column;
-                text-align: center;
-                gap: 15px;
-            }
-            .report-card {
-                border-left: none;
-                border-top: 5px solid var(--primary-color);
-            }
-            .site-footer {
-                flex-direction: column;
-                gap: 10px;
-            }
-        }
+        /* Estilos para Top Ten */
+        .top-ten-section { display: none; margin-top: 20px; }
+        .top-ten-section h2 { text-align: center; color: #0056b3; margin-bottom: 20px; }
+        .top-ten-table { width: 100%; border-collapse: collapse; background-color: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); }
+        .top-ten-table th, .top-ten-table td { padding: 12px 15px; text-align: left; border-bottom: 1px solid #e0e0e0; }
+        .top-ten-table th { background-color: #f0f3f6; color: #333; font-weight: 600; }
+        .top-ten-table tr:hover { background-color: #f7f9fc; }
+        .rank-cell { font-weight: bold; width: 50px; text-align: center; }
     </style>
 </head>
 <body>
 
-    <div class="top-bar">
-        <div class="left-section">
-            <button class="lang-btn active" onclick="cambiarIdioma('es')" id="btn-es">Español</button>
-            <button class="lang-btn" onclick="cambiarIdioma('en')" id="btn-en">English</button>
-            
-            <div class="theme-switch-wrapper">
-                <label class="theme-switch" for="checkbox">
-                    <input type="checkbox" id="checkbox" onchange="toggleTheme()">
-                    <div class="slider"></div>
-                </label>
-            </div>
-        </div>
-
-        <div class="markets-grid">
-            <div class="market-pill"><span class="status-dot" id="dot-nyse"></span><span class="market-name">NYSE</span><span id="status-nyse">...</span></div>
-            <div class="market-pill"><span class="status-dot" id="dot-nasdaq"></span><span class="market-name">NASDAQ</span><span id="status-nasdaq">...</span></div>
-            <div class="market-pill"><span class="status-dot" id="dot-lse"></span><span class="market-name">LSE</span><span id="status-lse">...</span></div>
-            <div class="market-pill"><span class="status-dot" id="dot-dax"></span><span class="market-name">GER</span><span id="status-dax">...</span></div>
-            <div class="market-pill"><span class="status-dot" id="dot-ibex"></span><span class="market-name">ESP</span><span id="status-ibex">...</span></div>
-            <div class="market-pill"><span class="status-dot" id="dot-b3"></span><span class="market-name">BRA</span><span id="status-b3">...</span></div>
-            <div class="market-pill"><span class="status-dot" id="dot-jpx"></span><span class="market-name">JPX</span><span id="status-jpx">...</span></div>
-            <div class="market-pill"><span class="status-dot" id="dot-sse"></span><span class="market-name">SSE</span><span id="status-sse">...</span></div>
-        </div>
+    <div class="header">
+        <h1 id="mainTitle">Informes Financieros y Económicos</h1>
+        <div class="subtitle"></div>
     </div>
 
     <div class="container">
-        <h1 id="main-title">Informes Financieros y Económicos</h1>
-
-        <div class="search-container">
-            <input type="text" id="search-input" class="search-input" placeholder="Buscar informe..." onkeyup="filtrarInformes()">
+        <div class="nav-buttons">
+            <button id="informesTab" class="active" onclick="mostrarInformes()">Informes</button>
+            <button id="topTenTab" class="inactive" onclick="mostrarTopTen()">Top Ten</button>
         </div>
 
-        <div id="contenedor-es" class="list-container active">
-            <div id="lista-espanol"></div>
+        <div class="language-switcher">
+            <button id="langEsButton" class="active-lang" onclick="cambiarIdioma('ES')">ES Español</button>
+            <button id="langEnButton" onclick="cambiarIdioma('EN')">US English</button>
         </div>
 
-        <div id="contenedor-en" class="list-container">
-            <div id="lista-ingles"></div>
+        <div id="informesSection">
+            <div id="languageSectionES">
+                <div class="report-card">
+                    <div class="report-info">
+                        <h3>Reporte de Crédito 3.0</h3>
+                        <p>Publicado: 24/11/2025</p>
+                    </div>
+                    <button class="view-button" onclick="mostrarPDF('CREDITO 3.0.pdf', 'Visualizando: Reporte de Crédito 3.0')">Ver Informe</button>
+                </div>
+            </div>
+
+            <div id="languageSectionEN" style="display: none;">
+                <div class="report-card">
+                    <div class="report-info">
+                        <h3>Credit Report 3.0</h3>
+                        <p>Published: 24/11/2025</p>
+                    </div>
+                    <button class="view-button" onclick="mostrarPDF('CREDITO 3.0.pdf', 'Viewing: Credit Report 3.0')">View Report</button>
+                </div>
+            </div>
+
+            <div id="pdfViewerSection" class="pdf-viewer-section" style="display: none;">
+                <p id="pdfViewerTitle" class="pdf-viewer-title"></p>
+                <iframe id="pdfViewer" src="" frameborder="0"></iframe>
+            </div>
         </div>
 
-        <div id="visor-container">
-            <h2 id="titulo-visor">...</h2>
-            <iframe id="pdf-frame" src=""></iframe>
+        <div id="topTenSection" class="top-ten-section">
+            <h2 id="topTenTitle"></h2>
+            <table id="topTenTable" class="top-ten-table">
+                <thead>
+                    <tr>
+                        <th class="rank-cell">#</th>
+                        <th id="col1"></th>
+                        <th id="col2"></th>
+                        <th id="col3"></th>
+                    </tr>
+                </thead>
+                <tbody id="topTenBody">
+                </tbody>
+            </table>
+            <p style="text-align: right; font-size: 12px; margin-top: 10px; color: #777;">*Datos aproximados a Noviembre de 2025. Fuente: Información pública.</p>
         </div>
+
     </div>
 
-    <footer class="site-footer">
-        <div class="footer-left">
-            <span>Mateo Furtado - Financial Analyst</span>
-            <a href="https://www.linkedin.com/in/mateo-furtado-a319a5252" target="_blank" class="linkedin-icon" title="LinkedIn">
-                <svg viewBox="0 0 24 24">
-                    <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
-                </svg>
-            </a>
-        </div>
-        <span id="reloj-vivo">--:--:--</span>
-    </footer>
+    <div class="footer">
+        <p class="footer-text">Mateo Furtado - Financial Analyst</p>
+        <p id="footerDate" class="footer-date"></p>
+    </div>
 
     <script>
-        const informesES = [
-            { nombre: "Reporte de Crédito 3.0", fecha: "2025-11-24", url: "CREDITO 3.0.pdf" }
+        const topTenData = [
+            { name: "NVIDIA", ticker: "NVDA", cap: "$4.251 T", country: "🇺🇸" },
+            { name: "Apple", ticker: "AAPL", cap: "$4.124 T", country: "🇺🇸" },
+            { name: "Alphabet (Google)", ticker: "GOOG", cap: "$3.867 T", country: "🇺🇸" },
+            { name: "Microsoft", ticker: "MSFT", cap: "$3.515 T", country: "🇺🇸" },
+            { name: "Amazon", ticker: "AMZN", cap: "$2.438 T", country: "🇺🇸" },
+            { name: "Broadcom", ticker: "AVGO", cap: "$1.777 T", country: "🇺🇸" },
+            { name: "Saudi Aramco", ticker: "2222.SR", cap: "$1.584 T", country: "🇸🇦" },
+            { name: "Meta Platforms", ticker: "META", cap: "$1.579 T", country: "🇺🇸" },
+            { name: "TSMC", ticker: "TSM", cap: "$1.448 T", country: "🇹🇼" },
+            { name: "Tesla", ticker: "TSLA", cap: "$1.374 T", country: "🇺🇸" }
         ];
 
-        const informesEN = [
-            { nombre: "Credit Report 3.0", fecha: "2025-11-24", url: "CREDITO 3.0.pdf" }
-        ];
-
-        let currentLang = 'es';
-
-        function filtrarInformes() {
-            const input = document.getElementById('search-input').value.toLowerCase();
-            const activeContainerId = currentLang === 'es' ? 'lista-espanol' : 'lista-ingles';
-            const cards = document.getElementById(activeContainerId).getElementsByClassName('report-card');
-
-            for (let i = 0; i < cards.length; i++) {
-                const title = cards[i].getElementsByTagName("h3")[0];
-                const txtValue = title.textContent || title.innerText;
-                if (txtValue.toLowerCase().indexOf(input) > -1) {
-                    cards[i].style.display = "";
-                } else {
-                    cards[i].style.display = "none";
-                }
+        const topTenText = {
+            ES: {
+                title: "Top 10 Empresas por Capitalización de Mercado",
+                column1: "Empresa (Ticker)",
+                column2: "Capitalización",
+                column3: "País"
+            },
+            EN: {
+                title: "Top 10 Companies by Market Capitalization",
+                column1: "Company (Ticker)",
+                column2: "Market Cap",
+                column3: "Country"
             }
-        }
+        };
 
-        function toggleTheme() {
-            document.body.classList.toggle('dark-mode');
-        }
+        let idiomaActual = 'ES';
 
-        function getMarketStatus(timeZone, intervals) {
-            try {
-                const now = new Date();
-                const formatter = new Intl.DateTimeFormat('en-US', {
-                    timeZone: timeZone, hour: 'numeric', minute: 'numeric', hour12: false, weekday: 'short'
-                });
-                const parts = formatter.formatToParts(now);
-                const hour = parseInt(parts.find(p => p.type === 'hour').value);
-                const minute = parseInt(parts.find(p => p.type === 'minute').value);
-                const weekday = parts.find(p => p.type === 'weekday').value;
+        function cambiarIdioma(lang) {
+            idiomaActual = lang;
 
-                if (weekday === 'Sat' || weekday === 'Sun') return false;
-                const currentMinutes = hour * 60 + minute;
-                
-                for (let interval of intervals) {
-                    if (currentMinutes >= interval[0] && currentMinutes < interval[1]) return true;
-                }
-                return false;
-            } catch (e) { return false; }
-        }
+            document.getElementById('langEsButton').classList.remove('active-lang');
+            document.getElementById('langEnButton').classList.remove('active-lang');
 
-        function updateMarkets() {
-            const usaOpen = getMarketStatus('America/New_York', [[9*60+30, 16*60]]);
-            const lseOpen = getMarketStatus('Europe/London', [[8*60, 16*60+30]]);
-            const daxOpen = getMarketStatus('Europe/Berlin', [[9*60, 17*60+30]]);
-            const ibexOpen = getMarketStatus('Europe/Madrid', [[9*60, 17*60+30]]);
-            const b3Open = getMarketStatus('America/Sao_Paulo', [[10*60, 17*60]]);
-            const jpxOpen = getMarketStatus('Asia/Tokyo', [[9*60, 11*60+30], [12*60+30, 15*60]]);
-            const sseOpen = getMarketStatus('Asia/Shanghai', [[9*60+30, 11*60+30], [13*60, 15*60]]);
-
-            renderMarketUI('nyse', usaOpen);
-            renderMarketUI('nasdaq', usaOpen);
-            renderMarketUI('lse', lseOpen);
-            renderMarketUI('dax', daxOpen);
-            renderMarketUI('ibex', ibexOpen);
-            renderMarketUI('b3', b3Open);
-            renderMarketUI('jpx', jpxOpen);
-            renderMarketUI('sse', sseOpen);
-        }
-
-        function renderMarketUI(id, isOpen) {
-            const dot = document.getElementById(`dot-${id}`);
-            const text = document.getElementById(`status-${id}`);
-            const labelOpen = currentLang === 'es' ? 'Abierto' : 'Open';
-            const labelClosed = currentLang === 'es' ? 'Cerrado' : 'Closed';
-
-            if (isOpen) {
-                dot.className = 'status-dot open';
-                text.innerText = labelOpen;
-                text.style.color = '#27ae60';
+            if (lang === 'ES') {
+                document.getElementById('langEsButton').classList.add('active-lang');
+                document.getElementById('langEnButton').classList.remove('active-lang');
             } else {
-                dot.className = 'status-dot closed';
-                text.innerText = labelClosed;
-                text.style.color = '#c0392b';
+                document.getElementById('langEnButton').classList.add('active-lang');
+                document.getElementById('langEsButton').classList.remove('active-lang');
+            }
+
+            document.getElementById('mainTitle').textContent = lang === 'ES' ? 'Informes Financieros y Económicos' : 'Financial and Economic Reports';
+            document.getElementById('languageSectionES').style.display = lang === 'ES' ? 'block' : 'none';
+            document.getElementById('languageSectionEN').style.display = lang === 'EN' ? 'block' : 'none';
+
+            if (document.getElementById('topTenSection').style.display === 'block') {
+                mostrarTopTen();
             }
         }
 
-        function cambiarIdioma(idioma) {
-            currentLang = idioma;
-            const contES = document.getElementById('contenedor-es');
-            const contEN = document.getElementById('contenedor-en');
-            const btnES = document.getElementById('btn-es');
-            const btnEN = document.getElementById('btn-en');
-            const titulo = document.getElementById('main-title');
-            const searchInput = document.getElementById('search-input');
-            
-            document.getElementById('visor-container').style.display = 'none';
-            searchInput.value = '';
-
-            if (idioma === 'es') {
-                contES.classList.add('active');
-                contEN.classList.remove('active');
-                btnES.classList.add('active');
-                btnEN.classList.remove('active');
-                titulo.innerText = "Informes Financieros y Económicos";
-                searchInput.placeholder = "Buscar informe...";
-            } else {
-                contEN.classList.add('active');
-                contES.classList.remove('active');
-                btnEN.classList.add('active');
-                btnES.classList.remove('active');
-                titulo.innerText = "Financial and Economic Reports";
-                searchInput.placeholder = "Search report...";
-            }
-            
-            renderizarLista(informesES, 'lista-espanol', 'Ver Informe');
-            renderizarLista(informesEN, 'lista-ingles', 'View Report');
-            updateMarkets();
-            actualizarReloj();
+        function mostrarPDF(pdfName, title) {
+            document.getElementById('pdfViewerTitle').textContent = title;
+            document.getElementById('pdfViewer').src = pdfName;
+            document.getElementById('pdfViewerSection').style.display = 'block';
         }
 
-        function formatearFecha(fechaISO) {
-            const partes = fechaISO.split('-');
-            return `${partes[2]}/${partes[1]}/${partes[0]}`;
+        function mostrarInformes() {
+            document.getElementById('informesTab').classList.add('active');
+            document.getElementById('informesTab').classList.remove('inactive');
+            document.getElementById('topTenTab').classList.add('inactive');
+            document.getElementById('topTenTab').classList.remove('active');
+
+            document.getElementById('informesSection').style.display = 'block';
+            document.getElementById('topTenSection').style.display = 'none';
+
+            cambiarIdioma(idiomaActual);
         }
 
-        function cargarPDF(url, nombre) {
-            const visor = document.getElementById('visor-container');
-            const frame = document.getElementById('pdf-frame');
-            const tituloVisor = document.getElementById('titulo-visor');
-            visor.style.display = "block";
-            frame.src = url;
-            tituloVisor.innerText = nombre;
-            visor.scrollIntoView({ behavior: 'smooth' });
+        function mostrarTopTen() {
+            document.getElementById('topTenTab').classList.add('active');
+            document.getElementById('topTenTab').classList.remove('inactive');
+            document.getElementById('informesTab').classList.add('inactive');
+            document.getElementById('informesTab').classList.remove('active');
+
+            document.getElementById('topTenSection').style.display = 'block';
+            document.getElementById('informesSection').style.display = 'none';
+
+            const text = topTenText[idiomaActual];
+            document.getElementById('topTenTitle').textContent = text.title;
+            document.getElementById('col1').textContent = text.column1;
+            document.getElementById('col2').textContent = text.column2;
+            document.getElementById('col3').textContent = text.column3;
+
+            const tableBody = document.getElementById('topTenBody');
+            tableBody.innerHTML = '';
+
+            topTenData.forEach((item, index) => {
+                const row = tableBody.insertRow();
+                row.innerHTML = `
+                    <td class="rank-cell">${index + 1}</td>
+                    <td>${item.name} (${item.ticker})</td>
+                    <td>${item.cap}</td>
+                    <td>${item.country}</td>
+                `;
+            });
         }
 
-        function renderizarLista(lista, contenedorID, textoBoton) {
-            try {
-                lista.sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
-                const contenedor = document.getElementById(contenedorID);
-                contenedor.innerHTML = ""; 
-                const labelFecha = currentLang === 'es' ? 'Publicado' : 'Published';
-                
-                lista.forEach(informe => {
-                    const card = document.createElement('div');
-                    card.className = 'report-card';
-                    card.innerHTML = `
-                        <div class="report-info">
-                            <h3>${informe.nombre}</h3>
-                            <span class="report-date">${labelFecha}: ${formatearFecha(informe.fecha)}</span>
-                        </div>
-                        <button class="btn-view" onclick="cargarPDF('${informe.url}', '${informe.nombre}')">
-                            ${textoBoton}
-                        </button>
-                    `;
-                    contenedor.appendChild(card);
-                });
-                filtrarInformes();
-            } catch (e) { console.error(e); }
+        function setFooterDate() {
+            const date = new Date();
+            const day = date.getDate().toString().padStart(2, '0');
+            const month = (date.getMonth() + 1).toString().padStart(2, '0');
+            const year = date.getFullYear();
+            document.getElementById('footerDate').textContent = `${day}/${month}/${year}`;
         }
 
-        function actualizarReloj() {
-            try {
-                const ahora = new Date();
-                const opciones = { weekday: 'short', year: 'numeric', month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' };
-                document.getElementById('reloj-vivo').innerText = ahora.toLocaleDateString(currentLang === 'es' ? 'es-ES' : 'en-US', opciones);
-                updateMarkets();
-            } catch (e) { console.error(e); }
-        }
-
-        renderizarLista(informesES, 'lista-espanol', 'Ver Informe');
-        renderizarLista(informesEN, 'lista-ingles', 'View Report');
-        setInterval(actualizarReloj, 1000);
-        actualizarReloj();
+        window.onload = () => {
+            setFooterDate();
+            mostrarInformes();
+        };
     </script>
-
 </body>
 </html>
