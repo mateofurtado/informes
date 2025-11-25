@@ -53,44 +53,46 @@
             color: white;
         }
 
-        /* --- MERCADOS --- */
+        /* --- MERCADOS (GRID MEJORADO PARA MUCHOS ITEMS) --- */
         .markets-grid {
             display: flex;
-            gap: 10px;
+            gap: 8px;
             flex-wrap: wrap;
+            justify-content: flex-end;
         }
 
         .market-pill {
             display: flex;
             align-items: center;
-            gap: 6px;
-            font-size: 0.75rem;
+            gap: 5px;
+            font-size: 0.7rem; /* Un poco más pequeño para que entren todos */
             font-weight: bold;
             background-color: #f8f9fa;
-            padding: 4px 10px;
+            padding: 4px 8px;
             border-radius: 12px;
             border: 1px solid #e1e4e8;
             white-space: nowrap;
         }
 
         .status-dot {
-            width: 8px;
-            height: 8px;
+            width: 7px;
+            height: 7px;
             border-radius: 50%;
-            background-color: #bdc3c7; /* Gris por defecto */
+            background-color: #bdc3c7;
         }
 
         .status-dot.open {
-            background-color: #27ae60; /* Verde */
+            background-color: #27ae60;
             box-shadow: 0 0 4px #27ae60;
         }
 
         .status-dot.closed {
-            background-color: #c0392b; /* Rojo */
+            background-color: #c0392b;
         }
 
         .market-name {
             color: #555;
+            text-transform: uppercase;
         }
 
         /* --- CONTENIDO --- */
@@ -112,7 +114,7 @@
         }
 
         .list-container {
-            display: none; /* JS lo activa */
+            display: none;
         }
 
         .list-container.active {
@@ -204,14 +206,13 @@
             align-items: center;
         }
 
-        @media (max-width: 768px) {
+        @media (max-width: 900px) {
             .top-bar {
                 flex-direction: column;
                 align-items: center;
             }
-            .site-footer {
-                flex-direction: column;
-                gap: 10px;
+            .markets-grid {
+                justify-content: center;
             }
         }
     </style>
@@ -230,10 +231,30 @@
                 <span class="market-name">NYSE</span>
                 <span id="status-nyse">...</span>
             </div>
+             <div class="market-pill">
+                <span class="status-dot" id="dot-nasdaq"></span>
+                <span class="market-name">NASDAQ</span>
+                <span id="status-nasdaq">...</span>
+            </div>
             <div class="market-pill">
                 <span class="status-dot" id="dot-lse"></span>
                 <span class="market-name">LSE</span>
                 <span id="status-lse">...</span>
+            </div>
+            <div class="market-pill">
+                <span class="status-dot" id="dot-dax"></span>
+                <span class="market-name">GER</span>
+                <span id="status-dax">...</span>
+            </div>
+             <div class="market-pill">
+                <span class="status-dot" id="dot-ibex"></span>
+                <span class="market-name">ESP</span>
+                <span id="status-ibex">...</span>
+            </div>
+             <div class="market-pill">
+                <span class="status-dot" id="dot-b3"></span>
+                <span class="market-name">BRA</span>
+                <span id="status-b3">...</span>
             </div>
             <div class="market-pill">
                 <span class="status-dot" id="dot-jpx"></span>
@@ -285,12 +306,11 @@
         let currentLang = 'es';
 
         // ==========================================
-        // 2. LÓGICA DE MERCADOS (NUEVA Y ROBUSTA)
+        // 2. LÓGICA DE MERCADOS
         // ==========================================
         
         function getMarketStatus(timeZone, intervals) {
             try {
-                // Obtener hora actual en la zona horaria del mercado
                 const now = new Date();
                 const formatter = new Intl.DateTimeFormat('en-US', {
                     timeZone: timeZone,
@@ -305,13 +325,10 @@
                 const minute = parseInt(parts.find(p => p.type === 'minute').value);
                 const weekday = parts.find(p => p.type === 'weekday').value;
 
-                // Si es fin de semana (Sat o Sun), cerrado
                 if (weekday === 'Sat' || weekday === 'Sun') return false;
 
                 const currentMinutes = hour * 60 + minute;
                 
-                // Verificar si está dentro de algún intervalo de apertura
-                // intervals es un array de arrays: [[inicio, fin], [inicio, fin]]
                 for (let interval of intervals) {
                     if (currentMinutes >= interval[0] && currentMinutes < interval[1]) {
                         return true;
@@ -321,27 +338,40 @@
 
             } catch (e) {
                 console.error("Error calculando mercado:", timeZone, e);
-                return false; // Si falla, asumimos cerrado para no romper la web
+                return false;
             }
         }
 
         function updateMarkets() {
-            // Definir horarios en minutos (Hora * 60 + Minutos)
+            // -- DEFINICIÓN DE HORARIOS (Hora * 60 + Minutos) --
+
+            // USA (NYSE & NASDAQ): 09:30 - 16:00
+            const usaOpen = getMarketStatus('America/New_York', [[9*60+30, 16*60]]);
             
-            // NYSE: 9:30 - 16:00
-            const nyseOpen = getMarketStatus('America/New_York', [[9*60+30, 16*60]]);
-            
-            // Londres: 08:00 - 16:30
+            // UK (LSE): 08:00 - 16:30
             const lseOpen = getMarketStatus('Europe/London', [[8*60, 16*60+30]]);
             
-            // Tokyo: 09:00 - 11:30 Y 12:30 - 15:00
+            // ALEMANIA (Frankfurt/Xetra): 09:00 - 17:30
+            const daxOpen = getMarketStatus('Europe/Berlin', [[9*60, 17*60+30]]);
+            
+            // ESPAÑA (BME): 09:00 - 17:30
+            const ibexOpen = getMarketStatus('Europe/Madrid', [[9*60, 17*60+30]]);
+            
+            // BRASIL (B3): 10:00 - 17:00 (Aprox, varía con horario verano)
+            const b3Open = getMarketStatus('America/Sao_Paulo', [[10*60, 17*60]]);
+            
+            // JAPON: 09:00 - 11:30 Y 12:30 - 15:00
             const jpxOpen = getMarketStatus('Asia/Tokyo', [[9*60, 11*60+30], [12*60+30, 15*60]]);
             
-            // Shanghai: 09:30 - 11:30 Y 13:00 - 15:00
+            // CHINA: 09:30 - 11:30 Y 13:00 - 15:00
             const sseOpen = getMarketStatus('Asia/Shanghai', [[9*60+30, 11*60+30], [13*60, 15*60]]);
 
-            renderMarketUI('nyse', nyseOpen);
+            renderMarketUI('nyse', usaOpen);
+            renderMarketUI('nasdaq', usaOpen); // Mismo horario que NYSE
             renderMarketUI('lse', lseOpen);
+            renderMarketUI('dax', daxOpen);
+            renderMarketUI('ibex', ibexOpen);
+            renderMarketUI('b3', b3Open);
             renderMarketUI('jpx', jpxOpen);
             renderMarketUI('sse', sseOpen);
         }
@@ -350,7 +380,6 @@
             const dot = document.getElementById(`dot-${id}`);
             const text = document.getElementById(`status-${id}`);
             
-            // Textos según idioma
             const labelOpen = currentLang === 'es' ? 'Abierto' : 'Open';
             const labelClosed = currentLang === 'es' ? 'Cerrado' : 'Closed';
 
@@ -378,7 +407,6 @@
             const btnEN = document.getElementById('btn-en');
             const titulo = document.getElementById('main-title');
             
-            // Ocultar visor al cambiar idioma
             document.getElementById('visor-container').style.display = 'none';
 
             if (idioma === 'es') {
@@ -394,8 +422,13 @@
                 btnES.classList.remove('active');
                 titulo.innerText = "Financial and Economic Reports";
             }
-            // Actualizar textos de mercados inmediatamente
+            
+            // IMPORTANTISIMO: Re-renderizar las listas para cambiar "Publicado" a "Published"
+            renderizarLista(informesES, 'lista-espanol', 'Ver Informe');
+            renderizarLista(informesEN, 'lista-ingles', 'View Report');
+
             updateMarkets();
+            actualizarReloj(); // Forzar actualización del reloj para el formato fecha del footer
         }
 
         function formatearFecha(fechaISO) {
@@ -418,7 +451,10 @@
             try {
                 lista.sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
                 const contenedor = document.getElementById(contenedorID);
-                contenedor.innerHTML = ""; // Limpiar antes de renderizar
+                contenedor.innerHTML = ""; 
+                
+                // Aquí definimos la palabra clave según el idioma actual
+                const labelFecha = currentLang === 'es' ? 'Publicado' : 'Published';
                 
                 lista.forEach(informe => {
                     const card = document.createElement('div');
@@ -426,7 +462,7 @@
                     card.innerHTML = `
                         <div class="report-info">
                             <h3>${informe.nombre}</h3>
-                            <span class="report-date">Publicado: ${formatearFecha(informe.fecha)}</span>
+                            <span class="report-date">${labelFecha}: ${formatearFecha(informe.fecha)}</span>
                         </div>
                         <button class="btn-view" onclick="cargarPDF('${informe.url}', '${informe.nombre}')">
                             ${textoBoton}
@@ -446,10 +482,8 @@
                     weekday: 'short', year: 'numeric', month: 'numeric', day: 'numeric', 
                     hour: '2-digit', minute: '2-digit', second: '2-digit' 
                 };
-                // Usamos try-catch también aquí por seguridad
                 document.getElementById('reloj-vivo').innerText = ahora.toLocaleDateString(currentLang === 'es' ? 'es-ES' : 'en-US', opciones);
                 
-                // Chequear mercados cada segundo
                 updateMarkets();
             } catch (e) {
                 console.error("Error en reloj:", e);
@@ -460,11 +494,9 @@
         // 4. INICIALIZACIÓN
         // ==========================================
         
-        // Render inicial
         renderizarLista(informesES, 'lista-espanol', 'Ver Informe');
         renderizarLista(informesEN, 'lista-ingles', 'View Report');
         
-        // Iniciar reloj
         setInterval(actualizarReloj, 1000);
         actualizarReloj();
 
