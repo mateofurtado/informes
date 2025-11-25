@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Informes Financieros - Mateo Furtado</title>
+    <title>Mateo Furtado - Portfolio</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -15,6 +15,42 @@
             min-height: 100vh;
         }
 
+        /* --- BARRA SUPERIOR (NUEVO) --- */
+        .top-bar {
+            background-color: #fff;
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .lang-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .lang-btn {
+            border: 2px solid #003366;
+            background: transparent;
+            color: #003366;
+            padding: 5px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+        }
+
+        .lang-btn:hover {
+            background-color: #e6efff;
+        }
+
+        .lang-btn.active {
+            background-color: #003366;
+            color: white;
+        }
+
+        /* --- CONTENEDOR PRINCIPAL --- */
         .container {
             max-width: 900px;
             margin: 0 auto;
@@ -28,45 +64,13 @@
             color: #003366;
             border-bottom: 3px solid #003366;
             padding-bottom: 15px;
-            margin-top: 0;
+            margin-top: 10px;
             text-align: center;
         }
 
-        /* --- BOTONES DE IDIOMA (PESTAÑAS) --- */
-        .language-tabs {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            margin-bottom: 30px;
-        }
-
-        .tab-btn {
-            background-color: #e0e6ed;
-            color: #555;
-            border: none;
-            padding: 12px 30px;
-            border-radius: 30px;
-            font-size: 1.1rem;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-        }
-
-        .tab-btn:hover {
-            background-color: #d0dbe7;
-        }
-
-        .tab-btn.active {
-            background-color: #003366;
-            color: white;
-            box-shadow: 0 4px 10px rgba(0,51,102,0.3);
-            transform: scale(1.05);
-        }
-
-        /* --- CONTENEDORES DE LISTAS --- */
+        /* --- LISTAS --- */
         .list-container {
-            display: none; /* Ocultos por defecto, JS activa uno */
+            display: none;
             animation: fadeIn 0.5s;
         }
 
@@ -79,7 +83,6 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* --- TARJETAS --- */
         .report-card {
             background: white;
             padding: 20px;
@@ -151,26 +154,37 @@
             background-color: #eee;
         }
 
+        /* --- FOOTER CON FECHA --- */
         .site-footer {
             background-color: #003366;
             color: white;
-            text-align: center;
-            padding: 25px;
+            padding: 20px 40px;
             font-weight: bold;
-            font-size: 1.2rem;
-            letter-spacing: 1px;
+            font-size: 1rem;
+            display: flex;
+            justify-content: space-between; /* Separa nombre y fecha */
+            align-items: center;
+        }
+
+        @media (max-width: 600px) {
+            .site-footer {
+                flex-direction: column;
+                gap: 10px;
+            }
         }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <h1>Informes Financieros y Económicos</h1>
-        
-        <div class="language-tabs">
-            <button class="tab-btn active" onclick="cambiarIdioma('es')" id="btn-es">🇪🇸 Español</button>
-            <button class="tab-btn" onclick="cambiarIdioma('en')" id="btn-en">🇺🇸 English</button>
+    <div class="top-bar">
+        <div class="lang-buttons">
+            <button class="lang-btn active" onclick="cambiarIdioma('es')" id="btn-es">Español</button>
+            <button class="lang-btn" onclick="cambiarIdioma('en')" id="btn-en">English</button>
         </div>
+    </div>
+
+    <div class="container">
+        <h1 id="main-title">Informes Financieros y Económicos</h1>
 
         <div id="contenedor-es" class="list-container active">
             <div id="lista-espanol"></div>
@@ -181,18 +195,19 @@
         </div>
 
         <div id="visor-container">
-            <h2 id="titulo-visor">Visualizando Documento...</h2>
+            <h2 id="titulo-visor">...</h2>
             <iframe id="pdf-frame" src=""></iframe>
         </div>
     </div>
 
     <footer class="site-footer">
-        Mateo Furtado - Financial Analyst
+        <span>Mateo Furtado - Financial Analyst</span>
+        <span id="reloj-vivo">--:--:--</span>
     </footer>
 
     <script>
         // ==========================================
-        // DATOS EDITABLES
+        // DATOS
         // ==========================================
         
         const informesES = [
@@ -204,15 +219,17 @@
         ];
 
         // ==========================================
-        
+        // LÓGICA
+        // ==========================================
+
         function cambiarIdioma(idioma) {
             const contES = document.getElementById('contenedor-es');
             const contEN = document.getElementById('contenedor-en');
             const btnES = document.getElementById('btn-es');
             const btnEN = document.getElementById('btn-en');
+            const titulo = document.getElementById('main-title');
             const visor = document.getElementById('visor-container');
 
-            // Ocultar visor al cambiar idioma
             visor.style.display = 'none';
 
             if (idioma === 'es') {
@@ -220,11 +237,13 @@
                 contEN.classList.remove('active');
                 btnES.classList.add('active');
                 btnEN.classList.remove('active');
+                titulo.innerText = "Informes Financieros y Económicos"; // Título Español
             } else {
                 contEN.classList.add('active');
                 contES.classList.remove('active');
                 btnEN.classList.add('active');
                 btnES.classList.remove('active');
+                titulo.innerText = "Financial and Economic Reports"; // Título Inglés
             }
         }
 
@@ -263,6 +282,23 @@
                 contenedor.appendChild(card);
             });
         }
+
+        // RELOJ
+        function actualizarReloj() {
+            const ahora = new Date();
+            const opciones = { 
+                weekday: 'short', 
+                year: 'numeric', 
+                month: 'numeric', 
+                day: 'numeric', 
+                hour: '2-digit', 
+                minute: '2-digit', 
+                second: '2-digit' 
+            };
+            document.getElementById('reloj-vivo').innerText = ahora.toLocaleDateString('es-ES', opciones);
+        }
+        setInterval(actualizarReloj, 1000);
+        actualizarReloj(); // Ejecutar inmediatamente
 
         renderizarLista(informesES, 'lista-espanol', 'Ver Informe');
         renderizarLista(informesEN, 'lista-ingles', 'View Report');
