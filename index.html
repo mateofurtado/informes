@@ -17,7 +17,7 @@
         }
 
         .container {
-            max-width: 900px;
+            max-width: 1100px; /* Más ancho para que quepan dos columnas */
             margin: 0 auto;
             padding: 30px 20px;
             flex: 1;
@@ -33,33 +33,65 @@
             text-align: center;
         }
 
-        /* --- TARJETAS DE INFORMES --- */
-        .report-card {
-            background: white;
+        /* --- ESTRUCTURA DE DOS COLUMNAS --- */
+        .columns-container {
+            display: flex;
+            gap: 30px; /* Espacio entre columnas */
+            margin-bottom: 30px;
+        }
+
+        .column {
+            flex: 1; /* Ambas columnas del mismo ancho */
+            background: #fff;
             padding: 20px;
-            margin-bottom: 15px;
             border-radius: 10px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+
+        .column h2 {
+            color: #004080;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+            margin-top: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* En celulares, poner una columna debajo de la otra */
+        @media (max-width: 768px) {
+            .columns-container {
+                flex-direction: column;
+            }
+        }
+
+        /* --- TARJETAS DE INFORMES --- */
+        .report-card {
+            background: #f9fbfd;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            border: 1px solid #e1e4e8;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-left: 5px solid #004080;
             transition: transform 0.2s;
         }
         
         .report-card:hover {
             transform: translateY(-2px);
+            border-color: #0056b3;
         }
 
         .report-info h3 {
-            margin: 0 0 8px 0;
-            font-size: 1.25rem;
-            color: #004080;
+            margin: 0 0 5px 0;
+            font-size: 1.1rem;
+            color: #003366;
         }
 
         .report-date {
             color: #666;
-            font-size: 0.95rem;
+            font-size: 0.85rem;
             display: block;
         }
 
@@ -69,17 +101,16 @@
             color: white;
             border: none;
             cursor: pointer;
-            padding: 12px 24px;
-            border-radius: 6px;
+            padding: 8px 16px;
+            border-radius: 5px;
             font-weight: bold;
-            font-size: 1rem;
-            box-shadow: 0 2px 5px rgba(0,86,179,0.3);
+            font-size: 0.9rem;
             transition: all 0.3s ease;
+            white-space: nowrap; /* Evita que el texto del botón se rompa */
         }
 
         .btn-view:hover {
             background-color: #004494;
-            box-shadow: 0 4px 8px rgba(0,86,179,0.4);
         }
 
         /* --- VISOR DE PDF --- */
@@ -101,7 +132,7 @@
 
         iframe {
             width: 100%;
-            height: 700px;
+            height: 750px;
             border: none;
             border-radius: 5px;
             background-color: #eee;
@@ -125,7 +156,17 @@
     <div class="container">
         <h1>Informes Financieros y Económicos</h1>
         
-        <div id="lista-informes"></div>
+        <div class="columns-container">
+            <div class="column">
+                <h2>🇪🇸 Español</h2>
+                <div id="lista-espanol"></div>
+            </div>
+
+            <div class="column">
+                <h2>🇺🇸 English</h2>
+                <div id="lista-ingles"></div>
+            </div>
+        </div>
 
         <div id="visor-container">
             <h2 id="titulo-visor">Visualizando Documento...</h2>
@@ -141,55 +182,67 @@
         // ==========================================
         // ZONA EDITABLE: TUS INFORMES
         // ==========================================
-        const informes = [
-            // IMPORTANTE: Mantén la fecha en formato AÑO-MES-DÍA ("YYYY-MM-DD")
-            // El código se encarga solo de transformarla a "Día/Mes/Año" visualmente.
+        
+        // 1. LISTA DE INFORMES EN ESPAÑOL
+        const informesES = [
             { nombre: "Reporte de Crédito 3.0", fecha: "2025-11-24", url: "CREDITO 3.0.pdf" }
-            
-            // Ejemplo para agregar otro (borra las barras // al principio para usarlo):
-            // , { nombre: "Análisis Mercado Q4", fecha: "2025-12-01", url: "mercado.pdf" }
+            // Agrega nuevos aquí abajo con una coma al final de la línea anterior
         ];
+
+        // 2. LISTA DE INFORMES EN INGLÉS
+        const informesEN = [
+            { nombre: "Credit Report 3.0", fecha: "2025-11-24", url: "CREDITO 3.0.pdf" } 
+            // Nota: Aquí puse el mismo PDF de ejemplo, pero deberías subir la versión en inglés (ej: CREDIT_3.0_EN.pdf) y cambiar la URL.
+        ];
+
+        // ==========================================
+        // LÓGICA DEL SISTEMA
         // ==========================================
 
-        // Ordenar por fecha (del más nuevo al más viejo)
-        informes.sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
-        
-        const contenedor = document.getElementById('lista-informes');
-        const visor = document.getElementById('visor-container');
-        const frame = document.getElementById('pdf-frame');
-        const tituloVisor = document.getElementById('titulo-visor');
+        function formatearFecha(fechaISO) {
+            const partes = fechaISO.split('-');
+            return `${partes[2]}/${partes[1]}/${partes[0]}`;
+        }
 
-        // Función para mostrar el PDF
         function cargarPDF(url, nombre) {
+            const visor = document.getElementById('visor-container');
+            const frame = document.getElementById('pdf-frame');
+            const tituloVisor = document.getElementById('titulo-visor');
+            
             visor.style.display = "block";
             frame.src = url;
             tituloVisor.innerText = "Visualizando: " + nombre;
             visor.scrollIntoView({ behavior: 'smooth' });
         }
 
-        // Función auxiliar para convertir fecha "2025-11-24" a "24/11/2025"
-        function formatearFecha(fechaISO) {
-            const partes = fechaISO.split('-'); // Divide por guiones
-            return `${partes[2]}/${partes[1]}/${partes[0]}`; // Reordena a Día/Mes/Año
+        function renderizarLista(lista, contenedorID, textoBoton) {
+            // Ordenar por fecha
+            lista.sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
+            
+            const contenedor = document.getElementById(contenedorID);
+            
+            lista.forEach(informe => {
+                const card = document.createElement('div');
+                card.className = 'report-card';
+                card.innerHTML = `
+                    <div class="report-info">
+                        <h3>${informe.nombre}</h3>
+                        <span class="report-date">Publicado: ${formatearFecha(informe.fecha)}</span>
+                    </div>
+                    <button class="btn-view" onclick="cargarPDF('${informe.url}', '${informe.nombre}')">
+                        ${textoBoton}
+                    </button>
+                `;
+                contenedor.appendChild(card);
+            });
         }
 
-        informes.forEach(informe => {
-            const card = document.createElement('div');
-            card.className = 'report-card';
-            
-            // Aquí usamos la nueva función formatearFecha
-            card.innerHTML = `
-                <div class="report-info">
-                    <h3>${informe.nombre}</h3>
-                    <span class="report-date">Publicado: ${formatearFecha(informe.fecha)}</span>
-                </div>
-                <button class="btn-view" onclick="cargarPDF('${informe.url}', '${informe.nombre}')">
-                    Ver Informe
-                </button>
-            `;
-            contenedor.appendChild(card);
-        });
+        // Ejecutar la renderización
+        renderizarLista(informesES, 'lista-espanol', 'Ver Informe');
+        renderizarLista(informesEN, 'lista-ingles', 'View Report');
+
     </script>
 
 </body>
 </html>
+
